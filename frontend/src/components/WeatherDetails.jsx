@@ -1,10 +1,10 @@
 import React from 'react';
-import { Droplets, Wind, Gauge, Eye, Sunrise, Sunset, Compass } from 'lucide-react';
+import { Droplets, Wind, Gauge, Eye, Sunrise, Sunset, Compass, CloudRain } from 'lucide-react';
 
 const WeatherDetails = ({ data }) => {
   if (!data || !data.metrics) return null;
 
-  const { metrics, sun } = data;
+  const { metrics, sun, rain } = data;
 
   const formatTime = (epochSeconds) => {
     if (!epochSeconds) return '--:--';
@@ -22,6 +22,15 @@ const WeatherDetails = ({ data }) => {
   };
 
   const detailCards = [
+    {
+      id: 'precipitation',
+      label: 'Precipitation & Rain',
+      value: `${rain?.probability ?? 0}% Chance`,
+      subtext: (rain?.expected_today_mm > 0)
+        ? `${rain.expected_today_mm} mm expected today`
+        : ((rain?.probability ?? 0) > 40 ? 'Showers likely today' : 'No rain expected — Dry'),
+      icon: <CloudRain size={22} color="var(--accent-glow)" />,
+    },
     {
       id: 'humidity',
       label: 'Humidity',
