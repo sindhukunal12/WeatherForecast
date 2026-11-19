@@ -65,3 +65,4 @@ class SearchHistory(db.Model):
 
     def __repr__(self):
         return f"<SearchHistory id={self.id} city_name='{self.city_name}' searched_at='{self.searched_at}'>"
+

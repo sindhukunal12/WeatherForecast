@@ -18,3 +18,4 @@ def init_db(app):
         # Import models inside context to ensure they are registered with SQLAlchemy
         from backend.models import FavoriteCity, SearchHistory  # noqa: F401
         db.create_all()
+

@@ -1,6 +1,7 @@
 """
 Flask Application Entry Point and Application Factory.
-Provides the create_app factory pattern, CORS initialization, and health endpoint.
+Provides the create_app factory pattern, blueprint registrations,
+CORS initialization, and health endpoint.
 """
 
 import os
@@ -8,6 +9,9 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from backend.config import get_config
 from backend.database import init_db
+from backend.routes.weather_routes import weather_bp
+from backend.routes.favorites_routes import favorites_bp
+from backend.routes.history_routes import history_bp
 
 
 def create_app(config_class=None):
@@ -31,6 +35,11 @@ def create_app(config_class=None):
     # Initialize SQLAlchemy database and create tables
     init_db(app)
 
+    # Register API Blueprints
+    app.register_blueprint(weather_bp)
+    app.register_blueprint(favorites_bp)
+    app.register_blueprint(history_bp)
+
     # Base Health Check Endpoint
     @app.route("/api/health", methods=["GET"])
     def health_check():
@@ -42,6 +51,11 @@ def create_app(config_class=None):
                 "version": "1.0.0",
                 "environment": app.config.get("ENV", "development"),
                 "database": "connected",
+                "api_key_configured": bool(
+                    app.config.get("OPENWEATHER_API_KEY")
+                    and app.config.get("OPENWEATHER_API_KEY")
+                    != "your_openweathermap_api_key_here"
+                ),
             }
         ), 200
 
