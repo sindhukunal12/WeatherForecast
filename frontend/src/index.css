@@ -124,3 +124,50 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-blue);
 }
+
+/* Additional Responsive Layout Rules & Keyframes */
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-status {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 840px) {
+  .main-layout {
+    flex-direction: column !important;
+    padding: 0 1rem 1rem 1rem !important;
+  }
+
+  aside {
+    width: 100% !important;
+    margin: 0 0 1.5rem 0 !important;
+  }
+
+  aside nav {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+}
