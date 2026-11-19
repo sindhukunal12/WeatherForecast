@@ -62,7 +62,7 @@ function App() {
                 marginTop: 'auto',
               }}
             >
-              WeatherPulse &mdash; Weather Forecast &amp; Monitoring System &bull; 6-Week Python &amp; Full Stack Internship Project &bull; Built with Flask &amp; React
+              WeatherPulse &mdash; Weather Forecast &amp; Monitoring System &bull; Built with Python Flask &amp; React
             </footer>
           </div>
         </Router>

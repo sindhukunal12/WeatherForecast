@@ -98,7 +98,7 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      {/* Internship Project Footer Badge in Sidebar */}
+      {/* System Info Footer Badge in Sidebar */}
       <div
         style={{
           padding: '0.85rem',
@@ -109,10 +109,10 @@ const Sidebar = () => {
         }}
       >
         <span style={{ color: 'var(--text-accent)', fontWeight: '600', display: 'block' }}>
-          6-Week Internship
+          Weather Monitoring System
         </span>
         <p style={{ color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-          Python &amp; Full Stack Web Development
+          Python &amp; Full Stack Web Platform
         </p>
       </div>
     </aside>
