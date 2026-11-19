@@ -4,7 +4,7 @@ import { Wind, AlertTriangle, ShieldCheck, Info } from 'lucide-react';
 const AirQualityCard = ({ aqiData }) => {
   if (!aqiData) return null;
 
-  const { aqi, status, color, advisory, pm2_5, pm10, no2, so2, o3, co } = aqiData;
+  const { aqi, status, color, advisory, standard, cpcb_aqi, us_aqi, pm2_5, pm10, no2, so2, o3, co } = aqiData;
 
   // Percentage for progress bar (clamped 0 to 100)
   const barPercent = Math.min(Math.round((aqi / 300) * 100), 100);
@@ -75,18 +75,30 @@ const AirQualityCard = ({ aqiData }) => {
             <span style={{ fontSize: '2rem', fontWeight: '800', lineHeight: 1, color: color }}>
               {aqi}
             </span>
-            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-muted)', marginTop: '2px' }}>
-              US AQI
+            <span style={{ fontSize: '0.625rem', fontWeight: '600', color: 'var(--text-muted)', marginTop: '2px', textAlign: 'center' }}>
+              {standard ? standard.split(' ')[0] : 'AQI'}
             </span>
           </div>
 
           <div>
-            <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-primary)', display: 'block' }}>
-              Air Condition: <span style={{ color }}>{status}</span>
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+                Air Condition: <span style={{ color }}>{status}</span>
+              </span>
+              <span style={{ fontSize: '0.725rem', padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-full)', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
+                {standard || 'National Standard'}
+              </span>
+            </div>
             <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: 1.5 }}>
               {advisory}
             </p>
+            {us_aqi !== undefined && cpcb_aqi !== undefined && (
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <span>National CPCB: <strong style={{ color: 'var(--text-primary)' }}>{cpcb_aqi}</strong></span>
+                <span>&bull;</span>
+                <span>US EPA: <strong style={{ color: 'var(--text-primary)' }}>{us_aqi}</strong></span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -166,3 +178,4 @@ const AirQualityCard = ({ aqiData }) => {
 };
 
 export default AirQualityCard;
+

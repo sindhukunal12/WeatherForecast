@@ -180,7 +180,7 @@ const CityDetailsPage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Velocity:</span>
-              <span style={{ fontWeight: '700' }}>{metrics?.wind_speed} {temperature?.unit === '°F' ? 'mph' : 'm/s'}</span>
+              <span style={{ fontWeight: '700' }}>{metrics?.wind_speed} {metrics?.wind_unit || (temperature?.unit === '°F' ? 'mph' : 'km/h')}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Orientation / Degree:</span>
