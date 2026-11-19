@@ -5,6 +5,12 @@ CORS initialization, and health endpoint.
 """
 
 import os
+import sys
+from pathlib import Path
+
+# Ensure workspace root is in sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from backend.config import get_config
