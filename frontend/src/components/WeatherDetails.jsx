@@ -25,11 +25,11 @@ const WeatherDetails = ({ data }) => {
     {
       id: 'precipitation',
       label: 'Precipitation & Rain',
-      value: `${rain?.probability ?? 0}% Chance`,
+      value: (rain?.probability > 0) ? `${rain.probability}% Chance` : '0% • Dry Skies',
       subtext: (rain?.expected_today_mm > 0)
-        ? `${rain.expected_today_mm} mm expected today`
-        : ((rain?.probability ?? 0) > 40 ? 'Showers likely today' : 'No rain expected — Dry'),
-      icon: <CloudRain size={22} color="var(--accent-glow)" />,
+        ? `${rain.expected_today_mm} mm expected volume`
+        : ((rain?.probability ?? 0) > 40 ? 'Showers likely today' : 'No rain expected today (0.0 mm)'),
+      icon: <CloudRain size={22} color={rain?.probability > 0 ? "var(--accent-glow)" : "var(--accent-cyan)"} />,
     },
     {
       id: 'humidity',

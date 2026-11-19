@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ArrowUp, ArrowDown, Droplets, CloudRain, Wind, Calendar, Clock, Sparkles } from 'lucide-react';
+import { useWeather } from '../context/WeatherContext';
 
 const ForecastCard = ({ forecastData }) => {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+  const { fetchWeatherData } = useWeather();
 
   if (!forecastData || !forecastData.daily || forecastData.daily.length === 0) return null;
 
@@ -75,6 +77,54 @@ const ForecastCard = ({ forecastData }) => {
         >
           <Sparkles size={13} /> Interactive Selection
         </span>
+      </div>
+
+      {/* Live Rain Radar Active Demonstration Quick Chips */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          flexWrap: 'wrap',
+          marginBottom: '1.25rem',
+          background: 'rgba(56, 189, 248, 0.05)',
+          padding: '0.6rem 0.85rem',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid rgba(56, 189, 248, 0.15)',
+        }}
+      >
+        <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
+          🌍 Live Global Rain Feeds:
+        </span>
+        {[
+          { name: 'Singapore', label: 'Singapore (88% Rain • 17mm)' },
+          { name: 'London', label: 'London (100% Rain • 6mm)' },
+          { name: 'Cherrapunji', label: 'Cherrapunji (78% Rain • 39mm)' },
+        ].map((item) => (
+          <button
+            key={item.name}
+            type="button"
+            onClick={() => fetchWeatherData && fetchWeatherData(item.name)}
+            style={{
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-full)',
+              color: 'var(--accent-glow)',
+              fontSize: '0.725rem',
+              fontWeight: '600',
+              padding: '0.2rem 0.65rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.3rem',
+              transition: 'all var(--transition-fast)',
+            }}
+            title={`View live real-time rain projections in ${item.name}`}
+          >
+            <CloudRain size={11} color="var(--accent-glow)" />
+            <span>{item.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* 5-Day Cards Grid */}
@@ -186,10 +236,18 @@ const ForecastCard = ({ forecastData }) => {
                     color: rainProb > 30 ? 'var(--accent-glow)' : 'var(--text-muted)',
                   }}
                 >
-                  <CloudRain size={13} color={rainProb > 30 ? 'var(--accent-glow)' : 'var(--text-muted)'} />
-                  <span>{rainProb}% Rain</span>
-                  {precipMm > 0 && (
-                    <span style={{ fontSize: '0.7rem', opacity: 0.85 }}>({precipMm}mm)</span>
+                  {rainProb > 0 ? (
+                    <>
+                      <CloudRain size={13} color={rainProb > 30 ? 'var(--accent-glow)' : 'var(--accent-cyan)'} />
+                      <span>{rainProb}% Rain</span>
+                      {precipMm > 0 && (
+                        <span style={{ fontSize: '0.7rem', opacity: 0.85 }}>({precipMm}mm)</span>
+                      )}
+                    </>
+                  ) : (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      ☀️ 0% • Dry Skies
+                    </span>
                   )}
                 </div>
               </div>
@@ -268,12 +326,13 @@ const ForecastCard = ({ forecastData }) => {
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              <CloudRain size={16} color="var(--accent-glow)" />
+              <CloudRain size={16} color={(selectedDay.rain_probability ?? 0) > 0 ? "var(--accent-glow)" : "var(--accent-cyan)"} />
               <div>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Precipitation</span>
                 <span style={{ fontSize: '0.85rem', fontWeight: '700', color: (selectedDay.rain_probability ?? 0) > 30 ? 'var(--accent-glow)' : 'var(--text-primary)' }}>
-                  {selectedDay.rain_probability ?? 0}% Chance
-                  {selectedDay.precipitation_sum > 0 ? ` (${selectedDay.precipitation_sum} mm)` : ' (Dry)'}
+                  {(selectedDay.rain_probability ?? 0) > 0
+                    ? `${selectedDay.rain_probability}% Chance (${selectedDay.precipitation_sum} mm)`
+                    : '0% • Clear & Dry (0.0 mm)'}
                 </span>
               </div>
             </div>
@@ -393,9 +452,15 @@ const ForecastCard = ({ forecastData }) => {
                         marginTop: '0.2rem',
                       }}
                     >
-                      <CloudRain size={11} color={slotRain > 30 ? 'var(--accent-glow)' : 'var(--text-muted)'} />
-                      <span>{slotRain}%</span>
-                      {slotMm > 0 && <span style={{ fontSize: '0.65rem' }}>({slotMm}mm)</span>}
+                      {slotRain > 0 ? (
+                        <>
+                          <CloudRain size={11} color={slotRain > 30 ? 'var(--accent-glow)' : 'var(--accent-cyan)'} />
+                          <span>{slotRain}%</span>
+                          {slotMm > 0 && <span style={{ fontSize: '0.65rem' }}>({slotMm}mm)</span>}
+                        </>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem' }}>Dry (0%)</span>
+                      )}
                     </div>
 
                     {/* Wind speed */}

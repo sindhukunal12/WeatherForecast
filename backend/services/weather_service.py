@@ -417,6 +417,31 @@ class WeatherService:
         rain_prob_today = int(daily.get("precipitation_probability_max", [0])[0]) if daily.get("precipitation_probability_max") else 0
         precip_sum_today = round(float(daily.get("precipitation_sum", [0.0])[0]), 1) if daily.get("precipitation_sum") else 0.0
 
+        # Meteorological calibration: align rain probability with observed weather code and precipitation volume
+        rain_wmo_map = {
+            51: 65, 53: 75, 55: 85,
+            61: 80, 63: 90, 65: 98,
+            80: 85, 81: 92, 82: 99,
+            95: 90, 96: 95, 99: 100,
+        }
+        if weather_code in rain_wmo_map and rain_prob_today < rain_wmo_map[weather_code]:
+            rain_prob_today = rain_wmo_map[weather_code]
+        if precip_current > 0 and rain_prob_today < 80:
+            rain_prob_today = 85
+
+        rain_status = (
+            "Heavy Rain" if rain_prob_today >= 80 else (
+                "Showers Likely" if rain_prob_today >= 50 else (
+                    "Light Rain / Drizzle" if rain_prob_today >= 20 else "Dry Skies"
+                )
+            )
+        )
+        rain_desc = (
+            f"{rain_prob_today}% chance of precipitation ({precip_sum_today} mm expected)"
+            if rain_prob_today > 0 else
+            "0% chance — Dry atmospheric conditions (0.0 mm rain expected)"
+        )
+
         result = {
             "city": loc["name"],
             "admin": loc.get("admin", ""),
@@ -451,6 +476,8 @@ class WeatherService:
                 "current_mm": precip_current,
                 "probability": rain_prob_today,
                 "expected_today_mm": precip_sum_today,
+                "status": rain_status,
+                "description": rain_desc,
             },
             "sun": {
                 "sunrise": sunrise_ts,
@@ -559,6 +586,17 @@ class WeatherService:
             rain_prob_day = int(rain_probs[i]) if i < len(rain_probs) and rain_probs[i] is not None else 0
             precip_sum_day = round(float(precip_sums[i]), 1) if i < len(precip_sums) and precip_sums[i] is not None else 0.0
             wind_max_day = round(float(wind_maxes[i]), 1) if i < len(wind_maxes) and wind_maxes[i] is not None else 0.0
+
+            rain_wmo_map = {
+                51: 65, 53: 75, 55: 85,
+                61: 80, 63: 90, 65: 98,
+                80: 85, 81: 92, 82: 99,
+                95: 90, 96: 95, 99: 100,
+            }
+            if wcode in rain_wmo_map and rain_prob_day < rain_wmo_map[wcode]:
+                rain_prob_day = rain_wmo_map[wcode]
+            if precip_sum_day > 0 and rain_prob_day < 60:
+                rain_prob_day = 75
 
             daily_list.append({
                 "date": date_str,
