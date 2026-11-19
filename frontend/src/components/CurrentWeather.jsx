@@ -78,7 +78,26 @@ const CurrentWeather = ({ data }) => {
               )}
             </h2>
           </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{formattedDate}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{formattedDate}</p>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                padding: '0.2rem 0.55rem',
+                borderRadius: 'var(--radius-full)',
+                background: 'rgba(16, 185, 129, 0.12)',
+                color: 'var(--status-success)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+              }}
+            >
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--status-success)' }} />
+              {data.source || 'Live Satellite Feed'}
+            </span>
+          </div>
         </div>
 
         {/* Favorite & Live Badge Actions */}
