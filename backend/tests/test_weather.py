@@ -65,3 +65,4 @@ def test_get_forecast_success(client):
     assert "temp_max" in first_day
     assert "condition" in first_day
     assert "icon" in first_day
+

@@ -304,3 +304,4 @@ The **Weather Forecast & Monitoring System** successfully achieves all objective
 4. Vite Guide: https://vitejs.dev/guide/
 5. OpenWeatherMap API Documentation: https://openweathermap.org/api
 6. Pytest Documentation: https://docs.pytest.org/
+

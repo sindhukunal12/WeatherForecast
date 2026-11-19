@@ -54,3 +54,4 @@ def test_add_favorite_missing_name_returns_400(client):
     """Verify adding favorite with missing city_name returns 400 Bad Request."""
     response = client.post("/api/favorites", json={})
     assert response.status_code == 400
+

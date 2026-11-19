@@ -54,3 +54,4 @@ const TemperatureToggle = () => {
 };
 
 export default TemperatureToggle;
+

@@ -119,3 +119,4 @@ const ForecastCard = ({ forecastData }) => {
 };
 
 export default ForecastCard;
+

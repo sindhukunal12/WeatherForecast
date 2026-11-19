@@ -65,3 +65,4 @@ def get_forecast(city):
         return jsonify({"error": str(e), "status_code": 504}), 504
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve forecast: {str(e)}", "status_code": 500}), 500
+

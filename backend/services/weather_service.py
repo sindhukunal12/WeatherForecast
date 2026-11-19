@@ -383,3 +383,4 @@ class WeatherService:
             "slices": slices,
             "is_live": False,
         }
+

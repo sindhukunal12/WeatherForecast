@@ -51,3 +51,4 @@ The objective of Week 3 was **React Frontend Development, Dashboard UI, City Sea
 - **Controlled Components:** Managing form state in React inputs.
 - **Glassmorphism CSS:** Using `backdrop-filter: blur(16px)` and variable alpha borders.
 - **Async Data Fetching:** Utilizing Promises with Axios to handle loading, success, and error states.
+

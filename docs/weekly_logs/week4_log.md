@@ -60,3 +60,4 @@ The objective of Week 4 was **SQLite Integration, Favorites Management, Search H
 - **Context API State Distribution:** Eliminates prop-drilling by sharing weather and favorites state across all routed pages.
 - **Client-Side Routing:** Seamless single-page transitions using React Router DOM (`NavLink`, `Routes`, `Route`).
 - **RESTful Idempotency & Status Codes:** Returning 201 for resource creation, 409 for conflicts, and 404 for missing entities.
+

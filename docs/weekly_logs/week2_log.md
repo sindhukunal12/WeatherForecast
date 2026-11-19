@@ -57,3 +57,4 @@ The objective of Week 2 was **Python Flask Backend Development, REST API Design,
 
 - Implement the React UI dashboard with SearchBar, CurrentWeather card, and forecast components.
 - Establish Axios HTTP service with base proxy configuration.
+

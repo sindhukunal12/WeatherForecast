@@ -11,3 +11,4 @@ def test_health_check_endpoint(client):
     assert data["status"] == "healthy"
     assert "Weather Forecast" in data["service"]
     assert data["database"] == "connected"
+

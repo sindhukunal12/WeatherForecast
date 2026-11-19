@@ -30,3 +30,4 @@ def test_search_history_lifecycle(client):
     check_res = client.get("/api/history")
     assert check_res.status_code == 200
     assert len(check_res.get_json()) == 0
+

@@ -79,3 +79,4 @@ def clear_history():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Failed to clear history: {str(e)}", "status_code": 500}), 500
+

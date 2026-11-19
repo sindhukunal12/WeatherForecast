@@ -178,3 +178,4 @@ const CurrentWeather = ({ data }) => {
 };
 
 export default CurrentWeather;
+

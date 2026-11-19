@@ -134,3 +134,4 @@ const SearchBar = ({ onCitySelect }) => {
 };
 
 export default SearchBar;
+

@@ -24,3 +24,4 @@ def client(app):
         yield app.test_client()
         db.session.remove()
         db.drop_all()
+

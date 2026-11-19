@@ -77,3 +77,4 @@ export const weatherApi = {
 };
 
 export default apiClient;
+

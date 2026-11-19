@@ -118,3 +118,4 @@ const FavoriteCard = ({ favorite, onSelect, onRemove }) => {
 };
 
 export default FavoriteCard;
+

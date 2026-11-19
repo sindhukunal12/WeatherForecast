@@ -188,3 +188,4 @@ const CityDetailsPage = () => {
 };
 
 export default CityDetailsPage;
+

@@ -117,3 +117,4 @@ const WeatherDetails = ({ data }) => {
 };
 
 export default WeatherDetails;
+
