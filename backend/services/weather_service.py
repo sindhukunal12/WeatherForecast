@@ -67,6 +67,100 @@ class WeatherService:
         cls._cache[key] = (data, time.time())
 
     @classmethod
+    def search_locations(cls, query: str) -> list:
+        """
+        Autocomplete search for cities, towns, villages, and postal codes.
+        Returns a deduplicated list of locations with hierarchy details.
+        """
+        q = query.strip()
+        if not q or len(q) < 2:
+            return []
+
+        cache_key = f"search_sugg_{q.lower()}"
+        cached = cls._is_cache_valid(cache_key)
+        if cached is not None:
+            return cached
+
+        results = []
+        seen = set()
+
+        # Step 1: Open-Meteo Geocoding API
+        try:
+            geo_url = "https://geocoding-api.open-meteo.com/v1/search"
+            res = requests.get(
+                geo_url,
+                params={"name": q, "count": 7, "language": "en", "format": "json"},
+                timeout=4,
+            )
+            if res.status_code == 200:
+                raw_list = res.json().get("results") or []
+                for item in raw_list:
+                    name = item.get("name")
+                    if not name:
+                        continue
+                    admin_parts = [p for p in [item.get("admin2"), item.get("admin1"), item.get("country")] if p]
+                    admin_str = ", ".join(admin_parts)
+                    unique_key = f"{name.lower()}_{admin_str.lower()}"
+                    if unique_key in seen:
+                        continue
+                    seen.add(unique_key)
+
+                    feat = item.get("feature_code", "PPL")
+                    is_village = feat in ["PPL", "PPLX", "PPLA3", "PPLA4"]
+                    loc_type = "Village / Rural" if is_village else "City / Town"
+
+                    results.append({
+                        "name": name,
+                        "display_name": f"{name}, {admin_str}" if admin_str else name,
+                        "admin": admin_str,
+                        "country": item.get("country", ""),
+                        "country_code": item.get("country_code", "").upper(),
+                        "lat": float(item.get("latitude", 0.0)),
+                        "lon": float(item.get("longitude", 0.0)),
+                        "type": loc_type,
+                    })
+        except Exception:
+            pass
+
+        # Step 2: OpenStreetMap Nominatim Deep Search (for hamlets, villages)
+        if len(results) < 4:
+            try:
+                nom_url = "https://nominatim.openstreetmap.org/search"
+                headers = {"User-Agent": "WeatherPulseProject/1.0 (contact: student@agro.edu)"}
+                n_res = requests.get(
+                    nom_url,
+                    params={"q": q, "format": "json", "limit": 4},
+                    headers=headers,
+                    timeout=4,
+                )
+                if n_res.status_code == 200:
+                    places = n_res.json()
+                    for p in places:
+                        disp = p.get("display_name", "")
+                        parts = [x.strip() for x in disp.split(",")]
+                        p_name = parts[0]
+                        p_admin = ", ".join(parts[1:3]) if len(parts) > 1 else ""
+                        unique_key = f"{p_name.lower()}_{p_admin.lower()}"
+                        if unique_key in seen:
+                            continue
+                        seen.add(unique_key)
+                        results.append({
+                            "name": p_name,
+                            "display_name": f"{p_name}, {p_admin}" if p_admin else p_name,
+                            "admin": p_admin,
+                            "country": parts[-1] if len(parts) > 1 else "",
+                            "country_code": "IN" if "India" in disp else "",
+                            "lat": float(p.get("lat", 0.0)),
+                            "lon": float(p.get("lon", 0.0)),
+                            "type": "Village / Rural Settlement",
+                        })
+            except Exception:
+                pass
+
+        cls._set_cache(cache_key, results)
+        return results
+
+    @classmethod
     def _resolve_location(cls, query: str) -> dict:
         """
         Universal Geographical Location Resolver.

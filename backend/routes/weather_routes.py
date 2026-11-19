@@ -66,3 +66,18 @@ def get_forecast(city):
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve forecast: {str(e)}", "status_code": 500}), 500
 
+
+@weather_bp.route("/search", methods=["GET"])
+def search_locations():
+    """
+    Search autocomplete suggestions for cities, towns, villages, and PIN codes.
+    Returns structured list of locations with coordinates and admin hierarchy.
+    """
+    query = request.args.get("q", "").strip()
+    if not query:
+        return jsonify([]), 200
+
+    results = WeatherService.search_locations(query)
+    return jsonify(results), 200
+
+

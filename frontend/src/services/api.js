@@ -39,6 +39,20 @@ export const weatherApi = {
     return response.data;
   },
 
+  // Location Autocomplete / Search Suggestions
+  searchLocations: async (query) => {
+    if (!query || !query.trim()) return [];
+    try {
+      const response = await apiClient.get('/search', {
+        params: { q: query.trim() },
+      });
+      return response.data || [];
+    } catch (e) {
+      console.warn('Search suggestions fallback:', e);
+      return [];
+    }
+  },
+
   // Favorites Management
   getFavorites: async (withWeather = false, units = 'metric') => {
     const response = await apiClient.get('/favorites', {
