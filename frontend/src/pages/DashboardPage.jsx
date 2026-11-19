@@ -3,6 +3,7 @@ import { useWeather } from '../context/WeatherContext';
 import SearchBar from '../components/SearchBar';
 import CurrentWeather from '../components/CurrentWeather';
 import WeatherDetails from '../components/WeatherDetails';
+import AirQualityCard from '../components/AirQualityCard';
 import ForecastCard from '../components/ForecastCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import ErrorMessage from '../components/ErrorMessage';
@@ -34,6 +35,9 @@ const DashboardPage = () => {
 
             {/* Weather Atmospheric Metrics */}
             <WeatherDetails data={currentWeather} />
+
+            {/* Live Air Quality Index Card */}
+            <AirQualityCard aqiData={currentWeather.aqi} />
 
             {/* 5-Day Weather Forecast */}
             <ForecastCard forecastData={forecast} />

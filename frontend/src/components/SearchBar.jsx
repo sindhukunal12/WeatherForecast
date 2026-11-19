@@ -47,7 +47,7 @@ const SearchBar = ({ onCitySelect }) => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by city name (e.g. London, Tokyo, New York, Mumbai)..."
+            placeholder="Search any city, rural village, town, or PIN code (e.g. Ralegan Siddhi, Shirdi, Tokyo, 414001)..."
             style={{
               flex: 1,
               background: 'transparent',

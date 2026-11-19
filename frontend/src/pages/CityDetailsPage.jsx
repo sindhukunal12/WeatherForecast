@@ -3,6 +3,7 @@ import { useWeather } from '../context/WeatherContext';
 import SearchBar from '../components/SearchBar';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import ErrorMessage from '../components/ErrorMessage';
+import AirQualityCard from '../components/AirQualityCard';
 import { MapPin, Globe, Clock, Wind, Droplets, Thermometer, Sun } from 'lucide-react';
 
 const CityDetailsPage = () => {
@@ -28,7 +29,7 @@ const CityDetailsPage = () => {
 
   if (!currentWeather) return null;
 
-  const { city, country, coordinates, temperature, condition, metrics, sun, timestamp } = currentWeather;
+  const { city, admin, country, location_type, coordinates, temperature, condition, metrics, sun, aqi, timestamp } = currentWeather;
   const slices = forecast?.slices || [];
 
   return (
@@ -39,17 +40,27 @@ const CityDetailsPage = () => {
       <div className="glass-panel" style={{ padding: '1.75rem 2rem', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <MapPin size={24} color="var(--accent-glow)" />
               <h2 style={{ fontSize: '2rem', fontWeight: '800' }}>{city}</h2>
+              {admin && (
+                <span style={{ fontSize: '1.05rem', color: 'var(--text-secondary)' }}>
+                  ({admin})
+                </span>
+              )}
               {country && (
-                <span style={{ fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
-                  ({country})
+                <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-accent)', background: 'var(--bg-surface)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  {country}
+                </span>
+              )}
+              {location_type && location_type.includes('Village') && (
+                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)' }}>
+                  🌾 {location_type}
                 </span>
               )}
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-              Detailed Meteorological Breakdown &amp; Short-Term Trend
+              Detailed Meteorological Breakdown, Short-Term Trend &amp; Air Quality
             </p>
           </div>
 
@@ -130,6 +141,9 @@ const CityDetailsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Live Air Quality Index Card */}
+      <AirQualityCard aqiData={aqi} />
 
       {/* Deep Thermal & Atmospheric Matrix */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>

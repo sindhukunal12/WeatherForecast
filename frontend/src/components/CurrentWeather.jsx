@@ -8,7 +8,7 @@ const CurrentWeather = ({ data }) => {
 
   if (!data) return null;
 
-  const { city, country, temperature, condition, metrics, coordinates, timestamp } = data;
+  const { city, admin, country, location_type, temperature, condition, metrics, coordinates, aqi, timestamp } = data;
   const isFav = isCityFavorite(city);
 
   const handleFavoriteToggle = async () => {
@@ -67,18 +67,28 @@ const CurrentWeather = ({ data }) => {
       {/* Top Header Row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
             <MapPin size={22} color="var(--accent-glow)" />
             <h2 style={{ fontSize: '1.85rem', fontWeight: '800', letterSpacing: '-0.025em', color: 'var(--text-primary)' }}>
               {city}
-              {country && (
-                <span style={{ fontSize: '1rem', fontWeight: '500', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>
-                  ({country})
-                </span>
-              )}
             </h2>
+            {admin && (
+              <span style={{ fontSize: '0.95rem', fontWeight: '500', color: 'var(--text-secondary)' }}>
+                {admin}
+              </span>
+            )}
+            {country && (
+              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-accent)', background: 'var(--bg-surface)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                {country}
+              </span>
+            )}
+            {location_type && location_type.includes('Village') && (
+              <span style={{ fontSize: '0.725rem', fontWeight: '700', color: '#10b981', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-full)' }}>
+                🌾 {location_type}
+              </span>
+            )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>{formattedDate}</p>
             <span
               style={{
@@ -97,6 +107,28 @@ const CurrentWeather = ({ data }) => {
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--status-success)' }} />
               {data.source || 'Live Satellite Feed'}
             </span>
+
+            {/* Live AQI Badge */}
+            {aqi && (
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontSize: '0.75rem',
+                  fontWeight: '700',
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: 'var(--radius-full)',
+                  background: `${aqi.color}22`,
+                  color: aqi.color,
+                  border: `1px solid ${aqi.color}55`,
+                }}
+              >
+                <span>AQI {aqi.aqi}</span>
+                <span>&bull;</span>
+                <span>{aqi.status}</span>
+              </span>
+            )}
           </div>
         </div>
 
