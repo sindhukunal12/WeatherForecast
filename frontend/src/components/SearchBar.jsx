@@ -202,7 +202,7 @@ const SearchBar = ({ onCitySelect }) => {
         </div>
       </form>
 
-      {/* Autocomplete Search Dropdown List */}
+      {/* Autocomplete Search Dropdown List (Light Contrast Theme) */}
       {isOpen && (
         <div
           style={{
@@ -210,14 +210,13 @@ const SearchBar = ({ onCitySelect }) => {
             top: '100%',
             left: 0,
             right: 0,
-            background: 'linear-gradient(180deg, rgba(13, 23, 42, 0.98) 0%, rgba(8, 15, 30, 0.98) 100%)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid var(--accent-glow)',
+            background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+            border: '2px solid var(--accent-glow)',
             borderTop: 'none',
             borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
-            boxShadow: '0 15px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.15)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.45), 0 0 25px rgba(0, 240, 255, 0.25)',
             zIndex: 1000,
-            maxHeight: '380px',
+            maxHeight: '390px',
             overflowY: 'auto',
           }}
         >
@@ -226,20 +225,21 @@ const SearchBar = ({ onCitySelect }) => {
             <div>
               <div
                 style={{
-                  padding: '0.6rem 1rem',
+                  padding: '0.65rem 1rem',
                   fontSize: '0.725rem',
                   fontWeight: '700',
-                  color: 'var(--accent-glow)',
+                  color: '#0284c7',
+                  background: '#f1f5f9',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  borderBottom: '1px solid var(--border-subtle)',
+                  borderBottom: '1px solid #e2e8f0',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}
               >
                 <span>Matching Locations ({suggestions.length})</span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'none' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'none' }}>
                   Press Enter to select
                 </span>
               </div>
@@ -260,18 +260,18 @@ const SearchBar = ({ onCitySelect }) => {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        background: isHighlighted ? 'rgba(0, 240, 255, 0.12)' : 'transparent',
-                        borderLeft: isHighlighted ? '3px solid var(--accent-glow)' : '3px solid transparent',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                        background: isHighlighted ? '#e0f2fe' : '#ffffff',
+                        borderLeft: isHighlighted ? '4px solid #0284c7' : '4px solid transparent',
+                        borderBottom: '1px solid #f1f5f9',
                         transition: 'background var(--transition-fast)',
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden' }}>
                         <div
                           style={{
-                            background: isVillage ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-surface)',
-                            color: isVillage ? '#10b981' : 'var(--accent-glow)',
-                            padding: '0.4rem',
+                            background: isVillage ? '#dcfce7' : '#e0f2fe',
+                            color: isVillage ? '#15803d' : '#0284c7',
+                            padding: '0.45rem',
                             borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
@@ -282,11 +282,11 @@ const SearchBar = ({ onCitySelect }) => {
                           <MapPin size={16} />
                         </div>
                         <div style={{ overflow: 'hidden' }}>
-                          <span style={{ fontSize: '0.925rem', fontWeight: '600', color: 'var(--text-primary)', display: 'block' }}>
+                          <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#0f172a', display: 'block' }}>
                             {item.name}
                           </span>
                           {item.admin && (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                            <span style={{ fontSize: '0.75rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                               {item.admin}
                             </span>
                           )}
@@ -297,23 +297,23 @@ const SearchBar = ({ onCitySelect }) => {
                         <span
                           style={{
                             fontSize: '0.675rem',
-                            fontWeight: '600',
-                            padding: '0.15rem 0.5rem',
+                            fontWeight: '700',
+                            padding: '0.2rem 0.55rem',
                             borderRadius: 'var(--radius-full)',
-                            background: isVillage ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-surface)',
-                            color: isVillage ? '#10b981' : 'var(--text-accent)',
-                            border: '1px solid var(--border-subtle)',
+                            background: isVillage ? '#dcfce7' : '#f1f5f9',
+                            color: isVillage ? '#15803d' : '#0369a1',
+                            border: isVillage ? '1px solid #bbf7d0' : '1px solid #cbd5e1',
                           }}
                         >
                           {isVillage ? '🌾 Village' : item.type || 'City'}
                         </span>
-                        <ArrowRight size={14} color="var(--text-muted)" />
+                        <ArrowRight size={14} color="#64748b" />
                       </div>
                     </div>
                   );
                 })
               ) : !isLoading ? (
-                <div style={{ padding: '1.25rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                <div style={{ padding: '1.5rem', textAlign: 'center', color: '#475569', fontSize: '0.875rem' }}>
                   No exact location matches found for "{query}". Press Enter to perform deep global resolution.
                 </div>
               ) : null}
@@ -328,13 +328,14 @@ const SearchBar = ({ onCitySelect }) => {
                 <div>
                   <div
                     style={{
-                      padding: '0.6rem 1rem',
+                      padding: '0.65rem 1rem',
                       fontSize: '0.725rem',
                       fontWeight: '700',
-                      color: 'var(--accent-cyan)',
+                      color: '#0284c7',
+                      background: '#f1f5f9',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
-                      borderBottom: '1px solid var(--border-subtle)',
+                      borderBottom: '1px solid #e2e8f0',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.4rem',
@@ -348,24 +349,27 @@ const SearchBar = ({ onCitySelect }) => {
                       key={hItem.id}
                       onClick={() => handleSelectLocation(hItem.city_name)}
                       style={{
-                        padding: '0.65rem 1rem',
+                        padding: '0.7rem 1rem',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                        background: '#ffffff',
+                        borderBottom: '1px solid #f1f5f9',
                         transition: 'background var(--transition-fast)',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0, 240, 255, 0.08)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#e0f2fe')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = '#ffffff')}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <History size={14} color="var(--text-muted)" />
-                        <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: '500' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <div style={{ background: '#f1f5f9', padding: '0.35rem', borderRadius: '50%', color: '#0284c7', display: 'flex', alignItems: 'center' }}>
+                          <History size={14} />
+                        </div>
+                        <span style={{ fontSize: '0.9rem', color: '#0f172a', fontWeight: '600' }}>
                           {hItem.city_name}
                         </span>
                       </div>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Search again</span>
+                      <span style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: '500' }}>Search again</span>
                     </div>
                   ))}
                 </div>
@@ -375,13 +379,14 @@ const SearchBar = ({ onCitySelect }) => {
               <div>
                 <div
                   style={{
-                    padding: '0.6rem 1rem',
+                    padding: '0.65rem 1rem',
                     fontSize: '0.725rem',
                     fontWeight: '700',
-                    color: 'var(--accent-glow)',
+                    color: '#0284c7',
+                    background: '#f1f5f9',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
-                    borderBottom: '1px solid var(--border-subtle)',
+                    borderBottom: '1px solid #e2e8f0',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.4rem',
@@ -398,35 +403,39 @@ const SearchBar = ({ onCitySelect }) => {
                       onClick={() => handleSelectLocation(pop.name)}
                       onMouseEnter={() => setHighlightedIndex(pIdx)}
                       style={{
-                        padding: '0.65rem 1rem',
+                        padding: '0.7rem 1rem',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        background: isHighlighted ? 'rgba(0, 240, 255, 0.12)' : 'transparent',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                        background: isHighlighted ? '#e0f2fe' : '#ffffff',
+                        borderLeft: isHighlighted ? '4px solid #0284c7' : '4px solid transparent',
+                        borderBottom: '1px solid #f1f5f9',
                         transition: 'background var(--transition-fast)',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <MapPin size={15} color="var(--accent-glow)" />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ background: '#e0f2fe', padding: '0.4rem', borderRadius: '50%', color: '#0284c7', display: 'flex', alignItems: 'center' }}>
+                          <MapPin size={15} />
+                        </div>
                         <div>
-                          <span style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--text-primary)', display: 'block' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a', display: 'block' }}>
                             {pop.name}
                           </span>
-                          <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)', display: 'block' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#475569', display: 'block' }}>
                             {pop.admin}
                           </span>
                         </div>
                       </div>
                       <span
                         style={{
-                          fontSize: '0.65rem',
-                          background: 'var(--bg-surface)',
-                          color: 'var(--text-secondary)',
-                          padding: '0.15rem 0.5rem',
+                          fontSize: '0.675rem',
+                          background: '#f1f5f9',
+                          color: '#0369a1',
+                          fontWeight: '600',
+                          padding: '0.2rem 0.55rem',
                           borderRadius: 'var(--radius-full)',
-                          border: '1px solid var(--border-subtle)',
+                          border: '1px solid #cbd5e1',
                         }}
                       >
                         {pop.type}
