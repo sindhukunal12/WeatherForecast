@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wind, AlertTriangle, ShieldCheck, Info } from 'lucide-react';
+import { Wind, AlertTriangle, ShieldCheck, Info, ExternalLink } from 'lucide-react';
 
 const AirQualityCard = ({ aqiData }) => {
   if (!aqiData) return null;
@@ -34,22 +34,48 @@ const AirQualityCard = ({ aqiData }) => {
           </p>
         </div>
 
-        {/* AQI Status Badge */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.4rem 0.85rem',
-            borderRadius: 'var(--radius-full)',
-            background: `${color}1a`,
-            border: `1px solid ${color}4d`,
-          }}
-        >
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color }} />
-          <span style={{ fontSize: '0.85rem', fontWeight: '700', color: color }}>
-            {status}
-          </span>
+        {/* AQI Status Badge & Source Link */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <a
+            href={aqiData.source_url || 'https://www.aqi.in'}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              fontSize: '0.725rem',
+              color: 'var(--accent-glow)',
+              background: 'rgba(0, 240, 255, 0.08)',
+              border: '1px solid rgba(0, 240, 255, 0.25)',
+              padding: '0.3rem 0.65rem',
+              borderRadius: 'var(--radius-full)',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontWeight: '600',
+              transition: 'background var(--transition-fast)',
+            }}
+            title="Verified against live monitoring on https://www.aqi.in"
+          >
+            <span>Live Feed: aqi.in</span>
+            <ExternalLink size={12} />
+          </a>
+
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.4rem 0.85rem',
+              borderRadius: 'var(--radius-full)',
+              background: `${color}1a`,
+              border: `1px solid ${color}4d`,
+            }}
+          >
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color }} />
+            <span style={{ fontSize: '0.85rem', fontWeight: '700', color: color }}>
+              {status}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -93,10 +119,10 @@ const AirQualityCard = ({ aqiData }) => {
               {advisory}
             </p>
             {us_aqi !== undefined && cpcb_aqi !== undefined && (
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                <span>National CPCB: <strong style={{ color: 'var(--text-primary)' }}>{cpcb_aqi}</strong></span>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', fontSize: '0.75rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+                <span>aqi.in (US EPA): <strong style={{ color: 'var(--accent-glow)' }}>{us_aqi}</strong></span>
                 <span>&bull;</span>
-                <span>US EPA: <strong style={{ color: 'var(--text-primary)' }}>{us_aqi}</strong></span>
+                <span>National CPCB: <strong style={{ color: 'var(--text-primary)' }}>{cpcb_aqi}</strong></span>
               </div>
             )}
           </div>

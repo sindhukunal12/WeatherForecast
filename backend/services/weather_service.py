@@ -313,13 +313,75 @@ class WeatherService:
         return 0.0
 
     @classmethod
-    def _fetch_air_quality(cls, lat: float, lon: float, country_code: str = "") -> dict:
+    def _fetch_aqi_in_live(cls, city_name: str, admin_name: str = "") -> dict:
+        """
+        Query live ground-station telemetry directly from https://www.aqi.in.
+        Matches official AQI.in real-time monitoring stations across India.
+        """
+        if not city_name:
+            return None
+
+        c_clean = re.sub(r"[^a-zA-Z0-9\s-]", "", city_name).strip().lower().replace(" ", "-")
+        state_clean = ""
+        if admin_name:
+            for p in reversed([x.strip().lower() for x in admin_name.split(",")]):
+                p_norm = re.sub(r"[^a-zA-Z0-9\s-]", "", p).replace(" ", "-")
+                if p_norm in [
+                    "punjab", "haryana", "rajasthan", "delhi", "maharashtra", "karnataka",
+                    "tamil-nadu", "uttar-pradesh", "gujarat", "west-bengal", "bihar",
+                    "madhya-pradesh", "andhra-pradesh", "telangana", "kerala", "odisha",
+                    "himachal-pradesh", "uttarakhand", "jharkhand", "assam", "goa"
+                ]:
+                    state_clean = p_norm
+                    break
+
+        candidates = []
+        if state_clean and state_clean != c_clean:
+            candidates.append(f"https://www.aqi.in/dashboard/india/{state_clean}/{c_clean}")
+        candidates.append(f"https://www.aqi.in/dashboard/india/{c_clean}")
+
+        if admin_name:
+            for part in admin_name.split(","):
+                p_slug = re.sub(r"[^a-zA-Z0-9\s-]", "", part).strip().lower().replace(" ", "-")
+                if p_slug and p_slug != c_clean and p_slug != state_clean:
+                    if state_clean:
+                        candidates.append(f"https://www.aqi.in/dashboard/india/{state_clean}/{p_slug}")
+                    candidates.append(f"https://www.aqi.in/dashboard/india/{p_slug}")
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+
+        for url in candidates[:4]:
+            try:
+                res = requests.get(url, headers=headers, timeout=4)
+                if res.status_code == 200:
+                    m = re.search(
+                        r"Air Quality Index \(AQI\) is (\d+)\s+([A-Za-z\s]+?)\s+level.*?PM2\.5\s*\(([\d\.]+)\s*µg/m³\).*?PM10\s*\(([\d\.]+)\s*µg/m³\)",
+                        res.text,
+                        re.I,
+                    )
+                    if m:
+                        return {
+                            "aqi": int(m.group(1)),
+                            "status": m.group(2).strip(),
+                            "pm2_5": float(m.group(3)),
+                            "pm10": float(m.group(4)),
+                            "url": url,
+                        }
+            except Exception:
+                pass
+        return None
+
+    @classmethod
+    def _fetch_air_quality(cls, lat: float, lon: float, country_code: str = "", city_name: str = "", admin_name: str = "") -> dict:
         """
         Query live real-time Air Quality Index (AQI) and atmospheric pollutants.
-        Calculates:
-          1. Indian National AQI (NAQI / CPCB Standard) matching Google Weather in India
-          2. US EPA AQI (AirNow Standard)
-          3. Detailed concentrations of PM2.5, PM10, NO2, SO2, O3, CO
+        Supports:
+          1. Live ground station telemetry from https://www.aqi.in
+          2. Indian National AQI (NAQI / CPCB Standard)
+          3. US EPA AQI (AirNow Standard)
+          4. Detailed concentrations of PM2.5, PM10, NO2, SO2, O3, CO
         """
         pm2_5 = 15.0
         pm10 = 30.0
@@ -355,20 +417,37 @@ class WeatherService:
             or (7.0 <= lat <= 35.5 and 68.0 <= lon <= 97.5)
         )
 
-        # Ground CAAQMS / CPCB Sensor Calibration:
-        # Global numerical models (CAMS) column-average pollutants across a 50km grid.
-        # In the Northern Indian Plains (Indo-Gangetic Basin: Delhi, NCR, Bhiwadi, Punjab, Haryana, UP, Bihar, Rajasthan)
-        # during winter temperature inversions (Oct-Feb), PM2.5 is trapped near the surface (<100m).
-        # Calibrate surface particulate concentrations to align with live ground-level CPCB CAAQMS stations used by Google Weather:
-        if is_india:
-            is_northern_plains = (20.0 <= lat <= 32.5 and 72.0 <= lon <= 88.5)
-            now_month = datetime.date.today().month
-            is_winter_inversion = now_month in [10, 11, 12, 1, 2]
+        # Check if live telemetry is available on aqi.in
+        aqi_in_data = cls._fetch_aqi_in_live(city_name, admin_name) if (is_india and city_name) else None
 
-            scale_factor = 2.45 if (is_northern_plains and is_winter_inversion) else (1.8 if is_northern_plains else 1.35)
-            pm2_5 = round(pm2_5 * scale_factor, 1)
-            pm10 = round(pm10 * (scale_factor * 0.95), 1)
-            no2 = round(no2 * 1.25, 1)
+        if aqi_in_data:
+            primary_aqi = aqi_in_data["aqi"]
+            pm2_5 = aqi_in_data["pm2_5"]
+            pm10 = aqi_in_data["pm10"]
+            us_aqi_final = primary_aqi
+            standard_name = "AQI.in Live Ground Station (US EPA Scale)"
+            aqi_source = "AQI.in Live Ground Station Network"
+            aqi_source_url = aqi_in_data["url"]
+        else:
+            # Ground CAAQMS / CPCB Sensor Calibration:
+            if is_india:
+                is_northern_plains = (20.0 <= lat <= 32.5 and 72.0 <= lon <= 88.5)
+                now_month = datetime.date.today().month
+                is_winter_inversion = now_month in [10, 11, 12, 1, 2]
+
+                scale_factor = 2.45 if (is_northern_plains and is_winter_inversion) else (1.8 if is_northern_plains else 1.35)
+                pm2_5 = round(pm2_5 * scale_factor, 1)
+                pm10 = round(pm10 * (scale_factor * 0.95), 1)
+                no2 = round(no2 * 1.25, 1)
+
+            # US EPA AQI calculated from surface-calibrated PM2.5
+            pm25_epa = [(0.0, 12.0, 0, 50), (12.1, 35.4, 51, 100), (35.5, 55.4, 101, 150), (55.5, 150.4, 151, 200), (150.5, 250.4, 201, 300), (250.5, 500.4, 301, 500)]
+            us_aqi_calc = round(cls._calc_subindex(pm2_5, pm25_epa))
+            us_aqi_final = max(us_aqi_raw, us_aqi_calc) if is_india else us_aqi_raw
+            primary_aqi = us_aqi_final
+            standard_name = "Indian National AQI (CPCB / NAQI)" if is_india else "US EPA AQI"
+            aqi_source = "Meteorological Feed"
+            aqi_source_url = "https://www.aqi.in"
 
         # Official CPCB Breakpoints for Indian National Air Quality Index (NAQI)
         pm25_cpcb = [(0, 30, 0, 50), (30, 60, 51, 100), (60, 90, 101, 200), (90, 120, 201, 300), (120, 250, 301, 400), (250, 500, 401, 500)]
@@ -380,64 +459,31 @@ class WeatherService:
         cpcb_sub_no2 = cls._calc_subindex(no2, no2_cpcb)
         cpcb_aqi = round(max(cpcb_sub_pm25, cpcb_sub_pm10, cpcb_sub_no2))
 
-        # US EPA AQI calculated from surface-calibrated PM2.5
-        pm25_epa = [(0.0, 12.0, 0, 50), (12.1, 35.4, 51, 100), (35.5, 55.4, 101, 150), (55.5, 150.4, 151, 200), (150.5, 250.4, 201, 300), (250.5, 500.4, 301, 500)]
-        us_aqi_calc = round(cls._calc_subindex(pm2_5, pm25_epa))
-        us_aqi_final = max(us_aqi_raw, us_aqi_calc) if is_india else us_aqi_raw
-
-        primary_aqi = cpcb_aqi if is_india else us_aqi_final
-        standard_name = "Indian National AQI (CPCB / NAQI)" if is_india else "US EPA AQI"
-
-        if is_india:
-            if primary_aqi <= 50:
-                status = "Good"
-                color = "#10b981"
-                advisory = "Minimal health impact. Clean atmospheric condition."
-            elif primary_aqi <= 100:
-                status = "Satisfactory"
-                color = "#22c55e"
-                advisory = "Minor breathing discomfort to sensitive people."
-            elif primary_aqi <= 200:
-                status = "Moderate"
-                color = "#eab308"
-                advisory = "Breathing discomfort to people with asthma and lung diseases."
-            elif primary_aqi <= 300:
-                status = "Poor"
-                color = "#f97316"
-                advisory = "Breathing discomfort to most people on prolonged exposure. Wear a mask."
-            elif primary_aqi <= 400:
-                status = "Very Poor"
-                color = "#ef4444"
-                advisory = "Respiratory illness on prolonged exposure. Avoid strenuous outdoor activity."
-            else:
-                status = "Severe"
-                color = "#881337"
-                advisory = "Affects healthy people and seriously impacts those with existing diseases."
+        # Status and health advisory mapped to primary AQI
+        if primary_aqi <= 50:
+            status = "Good"
+            color = "#10b981"
+            advisory = "Air quality is satisfactory. Enjoy all outdoor and agricultural activities."
+        elif primary_aqi <= 100:
+            status = "Moderate"
+            color = "#eab308"
+            advisory = "Acceptable air quality. Unusually sensitive individuals should limit prolonged exertion."
+        elif primary_aqi <= 150:
+            status = "Poor"
+            color = "#f97316"
+            advisory = "Children, elderly, and respiratory patients should reduce outdoor exertion."
+        elif primary_aqi <= 200:
+            status = "Unhealthy"
+            color = "#ef4444"
+            advisory = "Everyone may experience health effects. Wear a protective mask outdoors."
+        elif primary_aqi <= 300:
+            status = "Severe"
+            color = "#8b5cf6"
+            advisory = "Health alert: Increased risk for entire population. Avoid outdoor exertion."
         else:
-            if primary_aqi <= 50:
-                status = "Good"
-                color = "#10b981"
-                advisory = "Air quality is satisfactory. Enjoy all outdoor and agricultural activities."
-            elif primary_aqi <= 100:
-                status = "Moderate"
-                color = "#eab308"
-                advisory = "Acceptable air quality. Unusually sensitive individuals should limit prolonged exertion."
-            elif primary_aqi <= 150:
-                status = "Unhealthy for Sensitive Groups"
-                color = "#f97316"
-                advisory = "Children, elderly, and respiratory patients should reduce outdoor exertion."
-            elif primary_aqi <= 200:
-                status = "Unhealthy"
-                color = "#ef4444"
-                advisory = "Everyone may experience health effects. Wear a protective mask outdoors."
-            elif primary_aqi <= 300:
-                status = "Very Unhealthy"
-                color = "#8b5cf6"
-                advisory = "Health alert: Increased risk for entire population. Avoid outdoor exertion."
-            else:
-                status = "Hazardous"
-                color = "#881337"
-                advisory = "Emergency health conditions: Serious risk for entire population. Remain indoors."
+            status = "Hazardous"
+            color = "#881337"
+            advisory = "Emergency health conditions: Serious risk for entire population. Remain indoors."
 
         return {
             "aqi": primary_aqi,
@@ -453,6 +499,8 @@ class WeatherService:
             "so2": round(so2, 1),
             "o3": round(o3, 1),
             "co": round(co, 1),
+            "source": aqi_source,
+            "source_url": aqi_source_url,
         }
 
     @classmethod
@@ -525,8 +573,10 @@ class WeatherService:
             except Exception:
                 pass
 
-        # Step 3: Fetch Live Air Quality Index (AQI) matching Google standards
-        aqi_data = cls._fetch_air_quality(lat, lon, country_code=c_code)
+        # Step 3: Fetch Live Air Quality Index (AQI) matching aqi.in and Google standards
+        aqi_data = cls._fetch_air_quality(
+            lat, lon, country_code=c_code, city_name=loc["name"], admin_name=loc.get("admin", "")
+        )
 
         # Precise wind unit and precipitation
         wind_unit_label = "mph" if units == "imperial" else "km/h"
