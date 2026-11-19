@@ -92,3 +92,4 @@ The primary objective of Week 1 was to establish the comprehensive engineering f
 1. **Request Timeout & Resiliency Guard:** In Week 2, ensure all outbound calls to OpenWeatherMap have an explicit 10-second timeout to prevent thread starvation in Flask.
 2. **Standardized Response Envelope:** Build a helper utility (`format_response(data, status_code)`) to keep all API returns consistent.
 3. **In-Memory Caching:** Add a short TTL (time-to-live) cache (e.g. 10 minutes) for repeated weather queries to minimize redundant external API consumption.
+

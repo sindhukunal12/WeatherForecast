@@ -71,3 +71,4 @@ Maintains an audit trail of searched cities for rapid re-querying and recent sea
 - **Primary Key Indexes:** SQLite automatically constructs unique B-Tree indexes on `favorites.id` and `search_history.id`.
 - **Query Sorting:** Recent searches are queried via `ORDER BY searched_at DESC LIMIT 10`, benefiting from index-assisted lookups.
 - **De-duplication Logic:** Before inserting a new favorite, the application checks `SELECT id FROM favorites WHERE LOWER(city_name) = LOWER(:city)` to prevent duplicate records.
+

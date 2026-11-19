@@ -118,3 +118,4 @@ graph TD
 2. **CORS Governance:** `flask-cors` is configured to only whitelist trusted frontend origins (`http://localhost:5173` and `http://127.0.0.1:5173`), preventing unauthorized cross-origin abuse.
 3. **Parameterized SQL Queries:** SQLAlchemy ORM compiles queries using parameterized statements, neutralizing SQL injection vectors.
 4. **Input Sanitization:** User-supplied city queries are stripped of control characters, leading/trailing whitespaces, and validated against character-length limits prior to upstream dispatch.
+
