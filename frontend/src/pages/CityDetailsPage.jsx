@@ -4,7 +4,6 @@ import SearchBar from '../components/SearchBar';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import ErrorMessage from '../components/ErrorMessage';
 import AirQualityCard from '../components/AirQualityCard';
-import AudioForecastPlayer from '../components/AudioForecastPlayer';
 import { MapPin, Globe, Clock, Wind, Droplets, Thermometer, Sun } from 'lucide-react';
 
 const CityDetailsPage = () => {
@@ -65,8 +64,7 @@ const CityDetailsPage = () => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <AudioForecastPlayer weatherData={currentWeather} forecastData={forecast} />
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <div style={{ background: 'var(--bg-surface)', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', fontSize: '0.85rem' }}>
               <span style={{ color: 'var(--text-muted)', display: 'block' }}>Latitude</span>
               <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{coordinates?.lat}° N</span>
