@@ -11,7 +11,7 @@ from pathlib import Path
 # Ensure workspace root is in sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from backend.config import get_config
 from backend.database import init_db
@@ -65,9 +65,31 @@ def create_app(config_class=None):
             }
         ), 200
 
+    # Production Frontend Static Build Serving (Vite SPA)
+    frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+    if frontend_dist.exists():
+        @app.route("/", defaults={"path": ""})
+        @app.route("/<path:path>")
+        def serve_frontend(path):
+            if path and (frontend_dist / path).exists():
+                return send_from_directory(frontend_dist, path)
+            return send_from_directory(frontend_dist, "index.html")
+    else:
+        @app.route("/")
+        def index():
+            return jsonify(
+                {
+                    "message": "Weather Forecast & Monitoring API is operational.",
+                    "health_endpoint": "/api/health",
+                    "docs": "Run frontend development server or build frontend via 'npm run build'",
+                }
+            )
+
     # Global Error Handlers
     @app.errorhandler(404)
     def handle_not_found(error):
+        if frontend_dist.exists() and not request.path.startswith("/api/"):
+            return send_from_directory(frontend_dist, "index.html")
         return jsonify({"error": "Resource not found", "status_code": 404}), 404
 
     @app.errorhandler(500)
