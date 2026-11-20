@@ -5,6 +5,7 @@ import { History, Trash2, ArrowRight, Clock, MapPin } from 'lucide-react';
 
 const HistoryPage = () => {
   const { history, fetchHistory, clearHistory, fetchWeatherData } = useWeather();
+  const safeHistory = Array.isArray(history) ? history : [];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const HistoryPage = () => {
           </p>
         </div>
 
-        {history.length > 0 && (
+        {safeHistory.length > 0 && (
           <button
             onClick={clearHistory}
             style={{
@@ -67,7 +68,7 @@ const HistoryPage = () => {
         )}
       </div>
 
-      {history.length === 0 ? (
+      {safeHistory.length === 0 ? (
         <div
           className="glass-panel"
           style={{
@@ -118,7 +119,7 @@ const HistoryPage = () => {
       ) : (
         <div className="glass-panel" style={{ padding: '0.5rem', overflow: 'hidden' }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {history.map((item, index) => (
+            {safeHistory.map((item, index) => (
               <div
                 key={item.id || index}
                 style={{
@@ -126,7 +127,7 @@ const HistoryPage = () => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '1rem 1.25rem',
-                  borderBottom: index < history.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                  borderBottom: index < safeHistory.length - 1 ? '1px solid var(--border-subtle)' : 'none',
                   transition: 'background-color var(--transition-fast)',
                 }}
               >

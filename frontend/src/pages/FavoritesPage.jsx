@@ -6,6 +6,7 @@ import { Heart, Search } from 'lucide-react';
 
 const FavoritesPage = () => {
   const { favorites, fetchFavorites, removeFavorite, fetchWeatherData } = useWeather();
+  const safeFavorites = Array.isArray(favorites) ? favorites : [];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,12 +26,12 @@ const FavoritesPage = () => {
             Favorite Cities
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Bookmarked locations stored in SQLite database ({favorites.length} saved)
+            Bookmarked locations stored in SQLite database ({safeFavorites.length} saved)
           </p>
         </div>
       </div>
 
-      {favorites.length === 0 ? (
+      {safeFavorites.length === 0 ? (
         <div
           className="glass-panel"
           style={{
@@ -90,7 +91,7 @@ const FavoritesPage = () => {
             gap: '1.5rem',
           }}
         >
-          {favorites.map((fav) => (
+          {safeFavorites.map((fav) => (
             <FavoriteCard
               key={fav.id}
               favorite={fav}

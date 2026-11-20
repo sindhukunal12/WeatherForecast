@@ -55,10 +55,19 @@ export const weatherApi = {
 
   // Favorites Management
   getFavorites: async (withWeather = false, units = 'metric') => {
-    const response = await apiClient.get('/favorites', {
-      params: { with_weather: withWeather, units },
-    });
-    return response.data;
+    try {
+      const response = await apiClient.get('/favorites', {
+        params: { with_weather: withWeather, units },
+      });
+      if (typeof response.data === 'string') {
+        console.warn('getFavorites received string response instead of JSON');
+        return [];
+      }
+      return response.data;
+    } catch (err) {
+      console.warn('getFavorites request error:', err);
+      return [];
+    }
   },
 
   addFavorite: async (cityData) => {
@@ -73,10 +82,19 @@ export const weatherApi = {
 
   // Search History
   getHistory: async (limit = 15) => {
-    const response = await apiClient.get('/history', {
-      params: { limit },
-    });
-    return response.data;
+    try {
+      const response = await apiClient.get('/history', {
+        params: { limit },
+      });
+      if (typeof response.data === 'string') {
+        console.warn('getHistory received string response instead of JSON');
+        return [];
+      }
+      return response.data;
+    } catch (err) {
+      console.warn('getHistory request error:', err);
+      return [];
+    }
   },
 
   addHistory: async (cityName) => {

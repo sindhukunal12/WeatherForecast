@@ -20,6 +20,7 @@ const SearchBar = ({ onCitySelect }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const { fetchWeatherData, history } = useWeather();
+  const safeHistory = Array.isArray(history) ? history : [];
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -324,7 +325,7 @@ const SearchBar = ({ onCitySelect }) => {
           {query.trim().length < 2 && (
             <div>
               {/* Recent searches if available */}
-              {history && history.length > 0 && (
+              {safeHistory.length > 0 && (
                 <div>
                   <div
                     style={{
@@ -344,7 +345,7 @@ const SearchBar = ({ onCitySelect }) => {
                     <History size={13} />
                     <span>Recent Searches</span>
                   </div>
-                  {history.slice(0, 4).map((hItem) => (
+                  {safeHistory.slice(0, 4).map((hItem) => (
                     <div
                       key={hItem.id}
                       onClick={() => handleSelectLocation(hItem.city_name)}
@@ -450,12 +451,12 @@ const SearchBar = ({ onCitySelect }) => {
       )}
 
       {/* Quick History Pills Underneath */}
-      {history && history.length > 0 && !isOpen && (
+      {safeHistory.length > 0 && !isOpen && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', overflowX: 'auto', paddingBottom: '4px' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', flexShrink: 0 }}>
             <MapPin size={12} /> Recent:
           </span>
-          {history.slice(0, 5).map((item) => (
+          {safeHistory.slice(0, 5).map((item) => (
             <button
               key={item.id}
               onClick={() => handleSelectLocation(item.city_name)}

@@ -70,13 +70,27 @@ export const WeatherProvider = ({ children }) => {
     }
   }, [units, activeCity, fetchWeatherData]);
 
+  // Helper to ensure extracted state is always a valid Array
+  const extractArrayData = (res, specificKey) => {
+    if (Array.isArray(res)) return res;
+    if (res && typeof res === 'object') {
+      if (specificKey && Array.isArray(res[specificKey])) return res[specificKey];
+      if (Array.isArray(res.data)) return res.data;
+      if (Array.isArray(res.items)) return res.items;
+      if (Array.isArray(res.results)) return res.results;
+    }
+    return [];
+  };
+
   // Load Favorites from Database
   const fetchFavorites = useCallback(async (withWeather = true) => {
     try {
       const data = await weatherApi.getFavorites(withWeather, units);
-      setFavorites(data);
+      const safeFavorites = extractArrayData(data, 'favorites');
+      setFavorites(safeFavorites);
     } catch (err) {
       console.warn('Error fetching favorites:', err);
+      setFavorites([]);
     }
   }, [units]);
 
@@ -115,9 +129,9 @@ export const WeatherProvider = ({ children }) => {
   // Helper: check if a city is currently favorited
   const isCityFavorite = useCallback(
     (cityName) => {
-      if (!cityName) return false;
+      if (!cityName || !Array.isArray(favorites)) return false;
       return favorites.some(
-        (f) => f.city_name.toLowerCase() === cityName.toLowerCase()
+        (f) => f && f.city_name && f.city_name.toLowerCase() === cityName.toLowerCase()
       );
     },
     [favorites]
@@ -127,9 +141,11 @@ export const WeatherProvider = ({ children }) => {
   const fetchHistory = useCallback(async () => {
     try {
       const data = await weatherApi.getHistory(15);
-      setHistory(data);
+      const safeHistory = extractArrayData(data, 'history');
+      setHistory(safeHistory);
     } catch (err) {
       console.warn('Error fetching history:', err);
+      setHistory([]);
     }
   }, []);
 

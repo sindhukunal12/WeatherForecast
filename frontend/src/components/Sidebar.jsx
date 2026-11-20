@@ -13,13 +13,13 @@ const Sidebar = () => {
       to: '/favorites',
       label: 'Favorites',
       icon: <Heart size={18} />,
-      badge: favorites.length > 0 ? favorites.length : null,
+      badge: Array.isArray(favorites) && favorites.length > 0 ? favorites.length : null,
     },
     {
       to: '/history',
       label: 'Search History',
       icon: <History size={18} />,
-      badge: history.length > 0 ? history.length : null,
+      badge: Array.isArray(history) && history.length > 0 ? history.length : null,
     },
     { to: '/settings', label: 'Settings', icon: <Settings size={18} /> },
   ];

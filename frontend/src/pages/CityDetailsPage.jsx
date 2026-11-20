@@ -30,7 +30,7 @@ const CityDetailsPage = () => {
   if (!currentWeather) return null;
 
   const { city, admin, country, location_type, coordinates, temperature, condition, metrics, sun, aqi, timestamp } = currentWeather;
-  const slices = forecast?.slices || [];
+  const slices = Array.isArray(forecast?.slices) ? forecast.slices : [];
 
   return (
     <div>

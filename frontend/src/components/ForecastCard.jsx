@@ -6,7 +6,7 @@ const ForecastCard = ({ forecastData }) => {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const { fetchWeatherData } = useWeather();
 
-  if (!forecastData || !forecastData.daily || forecastData.daily.length === 0) return null;
+  if (!forecastData || !Array.isArray(forecastData.daily) || forecastData.daily.length === 0) return null;
 
   const { daily, city, slices } = forecastData;
   const safeIndex = Math.min(selectedDayIndex, daily.length - 1);
