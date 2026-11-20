@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { MapPin, Heart, ArrowUp, ArrowDown, Sparkles } from 'lucide-react';
 import { useWeather } from '../context/WeatherContext';
+import AudioForecastPlayer from './AudioForecastPlayer';
 
 const CurrentWeather = ({ data }) => {
-  const { isCityFavorite, addFavorite, removeFavorite, favorites } = useWeather();
+  const { isCityFavorite, addFavorite, removeFavorite, favorites, forecast } = useWeather();
   const [feedback, setFeedback] = useState('');
 
   if (!data) return null;
@@ -132,8 +133,9 @@ const CurrentWeather = ({ data }) => {
           </div>
         </div>
 
-        {/* Favorite & Live Badge Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Favorite & Audio Player Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <AudioForecastPlayer weatherData={data} forecastData={forecast} />
           {feedback && (
             <span style={{ fontSize: '0.775rem', color: 'var(--accent-glow)', background: 'var(--bg-surface)', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-highlight)' }}>
               {feedback}
