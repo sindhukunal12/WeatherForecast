@@ -43,5 +43,5 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:5000/api/health || exit 1
 
-# Start production server with Gunicorn
-CMD ["gunicorn", "backend.app:create_app()", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "4", "--timeout", "120"]
+# Start production server with Gunicorn (supports dynamic $PORT for cloud runtimes)
+CMD ["sh", "-c", "gunicorn \"backend.app:create_app()\" --bind 0.0.0.0:${PORT:-5000} --workers 2 --threads 4 --timeout 120"]
