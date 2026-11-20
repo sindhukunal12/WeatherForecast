@@ -5,7 +5,9 @@ import { History, Trash2, ArrowRight, Clock, MapPin } from 'lucide-react';
 
 const HistoryPage = () => {
   const { history, fetchHistory, clearHistory, fetchWeatherData } = useWeather();
-  const safeHistory = Array.isArray(history) ? history : [];
+  const safeHistory = Array.isArray(history)
+    ? history.filter((item) => item && typeof item === 'object')
+    : [];
   const navigate = useNavigate();
 
   useEffect(() => {

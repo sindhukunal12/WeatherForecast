@@ -35,13 +35,12 @@ class Config:
     OPENWEATHER_TIMEOUT_SECONDS = int(os.getenv("OPENWEATHER_TIMEOUT", "10"))
 
     # CORS Settings
-    CORS_ORIGINS = [
-        origin.strip()
-        for origin in os.getenv(
-            "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-        ).split(",")
-        if origin.strip()
-    ]
+    _cors_env = os.getenv("CORS_ORIGINS", "*").strip()
+    CORS_ORIGINS = (
+        "*"
+        if _cors_env == "*"
+        else [origin.strip() for origin in _cors_env.split(",") if origin.strip()]
+    )
 
 
 class DevelopmentConfig(Config):

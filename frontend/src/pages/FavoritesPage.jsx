@@ -6,7 +6,9 @@ import { Heart, Search } from 'lucide-react';
 
 const FavoritesPage = () => {
   const { favorites, fetchFavorites, removeFavorite, fetchWeatherData } = useWeather();
-  const safeFavorites = Array.isArray(favorites) ? favorites : [];
+  const safeFavorites = Array.isArray(favorites)
+    ? favorites.filter((item) => item && typeof item === 'object')
+    : [];
   const navigate = useNavigate();
 
   useEffect(() => {

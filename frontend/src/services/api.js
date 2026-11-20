@@ -6,7 +6,13 @@
 import axios from 'axios';
 
 // Base URL falls back to relative /api which is proxied by Vite dev server
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const rawApiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL =
+  typeof rawApiBase === 'string' &&
+  rawApiBase.startsWith('http') &&
+  !rawApiBase.replace(/\/+$/, '').endsWith('/api')
+    ? `${rawApiBase.replace(/\/+$/, '')}/api`
+    : rawApiBase;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

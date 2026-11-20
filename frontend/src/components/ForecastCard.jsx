@@ -44,9 +44,10 @@ const ForecastCard = ({ forecastData }) => {
   };
 
   // Get timeline for selected day: either from hourly_timeline or by filtering slices
-  let timeline = selectedDay.hourly_timeline || [];
-  if ((!timeline || timeline.length === 0) && slices && slices.length > 0) {
-    timeline = slices.filter((s) => s.datetime && s.datetime.startsWith(selectedDay.date));
+  let timeline = Array.isArray(selectedDay?.hourly_timeline) ? selectedDay.hourly_timeline : [];
+  const safeSlices = Array.isArray(slices) ? slices : [];
+  if (timeline.length === 0 && safeSlices.length > 0) {
+    timeline = safeSlices.filter((s) => s && s.datetime && s.datetime.startsWith(selectedDay?.date));
   }
 
   return (
@@ -388,7 +389,7 @@ const ForecastCard = ({ forecastData }) => {
             </span>
           </div>
 
-          {timeline.length > 0 ? (
+          {Array.isArray(timeline) && timeline.length > 0 ? (
             <div
               style={{
                 display: 'grid',

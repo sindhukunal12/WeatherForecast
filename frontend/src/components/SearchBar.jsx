@@ -20,7 +20,10 @@ const SearchBar = ({ onCitySelect }) => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const { fetchWeatherData, history } = useWeather();
-  const safeHistory = Array.isArray(history) ? history : [];
+  const safeHistory = Array.isArray(history)
+    ? history.filter((item) => item && typeof item === 'object' && item.city_name)
+    : [];
+  const safeSuggestions = Array.isArray(suggestions) ? suggestions : [];
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -245,8 +248,8 @@ const SearchBar = ({ onCitySelect }) => {
                 </span>
               </div>
 
-              {suggestions.length > 0 ? (
-                suggestions.map((item, index) => {
+              {safeSuggestions.length > 0 ? (
+                safeSuggestions.map((item, index) => {
                   const isHighlighted = highlightedIndex === index;
                   const isVillage = item.type && item.type.includes('Village');
 
@@ -345,7 +348,7 @@ const SearchBar = ({ onCitySelect }) => {
                     <History size={13} />
                     <span>Recent Searches</span>
                   </div>
-                  {safeHistory.slice(0, 4).map((hItem) => (
+                  {Array.isArray(safeHistory) && safeHistory.slice(0, 4).map((hItem) => (
                     <div
                       key={hItem.id}
                       onClick={() => handleSelectLocation(hItem.city_name)}
@@ -456,7 +459,7 @@ const SearchBar = ({ onCitySelect }) => {
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', flexShrink: 0 }}>
             <MapPin size={12} /> Recent:
           </span>
-          {safeHistory.slice(0, 5).map((item) => (
+          {Array.isArray(safeHistory) && safeHistory.slice(0, 5).map((item) => (
             <button
               key={item.id}
               onClick={() => handleSelectLocation(item.city_name)}

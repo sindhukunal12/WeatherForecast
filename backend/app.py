@@ -32,10 +32,11 @@ def create_app(config_class=None):
     app.config.from_object(config_class)
 
     # Initialize CORS for cross-origin communication with React frontend
+    cors_origins = app.config.get("CORS_ORIGINS", "*")
     CORS(
         app,
-        resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS", "*")}},
-        supports_credentials=True,
+        resources={r"/api/*": {"origins": cors_origins}},
+        supports_credentials=False if cors_origins == "*" else True,
     )
 
     # Initialize SQLAlchemy database and create tables
